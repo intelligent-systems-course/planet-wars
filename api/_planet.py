@@ -12,7 +12,7 @@ class Planet:
     __coords = (-1.0, -1.0)
 
     # The size of the planet
-    __size -= -1
+    __size = -1
 
     # The id (the index in the map's planets array)
     __id = None

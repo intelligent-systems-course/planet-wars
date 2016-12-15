@@ -65,6 +65,16 @@ amount of advanced python, and the number of dependencies. So, it might be that
 we're aware of the potential improvement, but we haven't used it just to keep the 
 code simple for novice programmers.  
 
+### The command-line scripts (play.py, tournament.py) make it difficult to do X
+
+The command line scripts provide a convenient starting point, but if you want to do 
+something more complex (like try a range of parameters for your bot), they are probably 
+too limited. 
+
+Your best bet is to write your own script that does what you want, and have it call the 
+engine. Have a look at the function play(...) in  api/engine.py . You can write a 
+script that sets up the bots in the way you need and calls that function.
+
 ## Changes from last year's challenge
 
 The codebase has been rewritten entirely, so bots from last year won't work. To

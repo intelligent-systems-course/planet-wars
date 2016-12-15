@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """
 RandomBot -- A simple strategy: enumerates all legal moves, and picks one 
 uniformly at random.
