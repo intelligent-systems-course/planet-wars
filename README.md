@@ -16,11 +16,28 @@ of the competition can be found on blackboard.
 
 ## Technical requirements
 
-You require a working python3 environment and a good text editor or an IDE. If 
+You require a working python 2.7 environment and a good text editor or an IDE. If 
 that's enough information, read on below. If you're not quite sure how to go
-about this, see the installation tutorial on Blackboard. There will be a handson
+about this, see the installation tutorial on Blackboard. There will be a hands-on
 session in the first week to help you get started. 
- 
+
+## The rules of planetwars
+
+The rules are encoded in the engine, spefically in the methods moves() and next() 
+of the [state object](https://github.com/intelligent-systems-course/planet-wars/blob/master/api/_state.py).
+
+Here's a quick summary:
+
+ * The aim of the game is to eradicate all planets and ships of the opposing player.
+ * The two players move one at a time.
+ * A move is made by sending ships from one planet (the source) to another (the destination).
+ * A move always results in half the source planet's ships travelling towards the destination.
+ * A collection of ships in transit is called a _fleet_.
+ * If, on arrival, the target planet is _neutral_ (not owned by any player) or owned by the opponent, the fleet attacks the planet: one ship in the fleet cancels out against one ship on the planet. If the fleet has ships left over and the planet doesn't, the fleet's owner takes over ownership of the planet, and the remainder of the fleet becomes stationed at the planet.
+ * If, on arrival, the target planet is owned by the owner of the fleet, the fleet reinforces the planet: the ships in the fleet are added to those already at the planet.
+ * Planets occasionally produce ships; the bigger the planet the faster they produce ships. A planet of size 1/n, produces a ship every n turns. The biggest planet size is 1, which produces a ship every turn.
+ * The standard playing field has size planets. Each player starts with one planet of size 1, at opposite corners of the playing field, cotaining 100 ships. The other four planets are distributed randomly. For the generating code, look at the function [State.generate](https://github.com/intelligent-systems-course/planet-wars/blob/master/api/_state.py#L440)
+
 ### Python knowledge
 
 You will of course also need a working knowledge of python. If you're looking to 
@@ -38,7 +55,19 @@ following mean. If not, take some time to google them and read up:
 
 What happens if I pass a function a 'State' object, and the function changes the
 object? Do I keep an unchanged state, or does my state change as well? 
- 
+
+#### Object oriented programming
+
+What's the difference between a class and an object? How are these expressed in python? 
+What does the _self_ keyword do?
+
+#### Recursion
+
+Briefly: a method calling itself. Why would this useful, and how does it work?
+
+#### List comprehensions
+
+Advanced python, but they occur ocasionally in the code. Useful to know.
 
 ## FAQ
 
@@ -72,17 +101,11 @@ something more complex (like try a range of parameters for your bot), they are p
 too limited. 
 
 Your best bet is to write your own script that does what you want, and have it call the 
-engine. Have a look at the function play(...) in  api/engine.py . You can write a 
-script that sets up the bots in the way you need and calls that function.
+engine. Have a look at the function play(...) in  api/engine.py, or have it run a by 
+itself. See experiment.py for an example.
 
 ## Changes from last year's challenge
 
 The codebase has been rewritten entirely, so bots from last year won't work. To
 reduce overhead, Java is no longer supported, only python.
-
-The Python version has been upgraded to version 3. 
-
-The game can now be played in two modes: full information and imperfect 
-information. This is also the case in the [Galcon game](http://www.galcon.com/flash); 
-later levels reduce the amount of information you see.
 
