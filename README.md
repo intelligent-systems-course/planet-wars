@@ -7,8 +7,7 @@ turn based strategy game _Planet Wars_.
 
 To get to know the concept of the game, please visit 
 [Galcon's website](http://www.galcon.com/flash). The challenge was inspired by this 
-project and resembles it a lot. (Free downloads for android and iphone 
-[here](http://www.galcon.com/g2/download.php)).
+project and resembles it a lot. (Free multiplayer versions exist for Android and iPhone, but be careful, these are quite addictive).
 
 Your job is to make a bot that will play a turn-based version of this game. 
 General rules about the project, including the rules of the game and the rules 
