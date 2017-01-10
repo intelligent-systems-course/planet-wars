@@ -36,7 +36,7 @@ class Bot:
                 source = mine
 
         # Find the weakest enemy or neutral planet (smallest number of ships).
-        for his in (state.planets(u.other(id)) + state.planets(0)):
+        for his in (state.planets(u.other(my_id)) + state.planets(0)):
             strength = state.garrison(his)
             if strength < dest_strength:
                 dest_strength = strength
