@@ -66,7 +66,68 @@ Briefly: a method calling itself. Why would this useful, and how does it work?
 
 #### List comprehensions
 
-Advanced python, but they occur ocasionally in the code. Useful to know.
+Advanced python, but they occur occasionally in the code. Useful to know.
+
+## Examples
+
+Here are some quick use cases and solutions to help you get a feel for the code.
+
+### Get the size of a planet
+Let 'state' be the state you're given and let's say you want the size of the i'th planet. Then the following a should do the trick:
+```
+size_of planet_i = state.planets()[i].size()
+```
+Or, to print the size of every planet:
+```
+for planet in state.planets():
+    print 'planet {} has size {}.'.format(planet.id(), planet.size())
+```
+
+### Find out if I'm player 1 or 2
+
+```
+me = state.whose_turn()
+```
+
+### Print the coordinates of all fleets source and target planet
+
+```
+for i, fleet in enumerate(state.fleets()):
+
+    source = fleet.source()
+    target = fleet.target()
+    
+    source_crds = source.coords()
+    target crds = target.coords()
+    
+    print('Fleet {} is moving from {} to {}'.format(i, source_crds, target_crds))
+```
+
+### Draw a PNG of a single state
+```
+fig = state.visualize()   # this is a matplotlib Figure object
+fig.savefig('state.png')  # matplotlib detects the format you want from the extension you use
+```
+
+### Generate a random state
+```
+rand_state = State.generate()
+
+```
+### Compute the average number of ships on one of my planets
+
+```
+me = state.whose_turn()
+my_planets = state.planets(me)
+
+avg = 0.0
+for planet in my_planets:
+    avg += state.garrison(planet)
+
+avg = avg / len(my_planets)
+
+print('average ships per planet: {}'.format(avg))
+```
 
 ## FAQ
 
