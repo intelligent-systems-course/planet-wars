@@ -34,7 +34,7 @@ def run_tournament(options):
             else:
                 p = [b, a]
 
-            start, _ = State.generate(options.num_planets)
+            start, _ = State.generate(int(options.num_planets))
 
             winner = engine.play(bots[p[0]], bots[p[1]], start, verbose=False, outfile=None)
 

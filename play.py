@@ -21,7 +21,7 @@ def call_engine(options):
     player2 = util.load_player(options.player2)
 
     # Generate or load the map
-    state, id = State.generate(options.num_planets)
+    state, id = State.generate(int(options.num_planets))
     if not options.quiet:
         print('-- Using map with id {} '.format(id))
         print('   Start state: ' + str(state))
