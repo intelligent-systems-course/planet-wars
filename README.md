@@ -74,24 +74,24 @@ Here are some quick use cases and solutions to help you get a feel for the code.
 
 ### Get the size of a planet
 Let 'state' be the state you're given and let's say you want the size of the i'th planet. Then the following a should do the trick:
-```
+```python
 size_of planet_i = state.planets()[i].size()
 ```
 Or, to print the size of every planet:
-```
+```python
 for planet in state.planets():
     print 'planet {} has size {}.'.format(planet.id(), planet.size())
 ```
 
 ### Find out if I'm player 1 or 2
 
-```
+```python
 me = state.whose_turn()
 ```
 
 ### Print the coordinates of all fleets source and target planet
 
-```
+```python
 for i, fleet in enumerate(state.fleets()):
 
     source = fleet.source()
@@ -104,19 +104,18 @@ for i, fleet in enumerate(state.fleets()):
 ```
 
 ### Draw a PNG of a single state
-```
+```python
 fig = state.visualize()   # this is a matplotlib Figure object
 fig.savefig('state.png')  # matplotlib detects the format you want from the extension you use
 ```
 
 ### Generate a random state
-```
+```python
 rand_state = State.generate()
-
 ```
 ### Compute the average number of ships on one of my planets
 
-```
+```python
 me = state.whose_turn()
 my_planets = state.planets(me)
 
