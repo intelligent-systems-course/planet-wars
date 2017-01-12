@@ -15,7 +15,7 @@ def play(
             max_time=5000,      # type: int
             max_turns=100,      # type: int
             verbose=True,       # type: bool
-            outfile='game.pdf'  # type: str
+            outfile='game.pdf'  # type: str | None
         ):
     """
     Play a game between two given players, from the given starting state.
@@ -23,7 +23,7 @@ def play(
     pr('player1: {}'.format(player1), verbose)
     pr('player2: {}'.format(player2), verbose)
 
-    # Check if the inputs are correct 
+    # Check if the inputs are correct
     if state.whose_turn() != 1:
         raise ValueError('The starting state should have player 1 to move (found state.whose_turn() == {}).'.format(state.whose_turn()))
 
@@ -37,7 +37,7 @@ def play(
 
     # The game loop
     while not state.finished():
-        
+
         player = player1 if state.whose_turn() == 1 else player2
 
         move = get_move(state, player, max_time, verbose)
