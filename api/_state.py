@@ -489,43 +489,43 @@ class State:
 
         return state, id
 
-        @staticmethod
-        def load(file, whose_turn=1):
-            # type: () -> State
-            """
-            Loads a state from a file (or more accurately, a map, and garrison/ownership information).
+    @staticmethod
+    def load(file, whose_turn=1):
+        # type: () -> State
+        """
+        Loads a state from a file (or more accurately, a map, and garrison/ownership information).
 
-            Each line in the file describes a planet. The lines should be of the form
-                x, y, size, nr_ships, owner
-            At least one planet should be owned by player 1 and one by 2.
+        Each line in the file describes a planet. The lines should be of the form
+            x, y, size, nr_ships, owner
+        At least one planet should be owned by player 1 and one by 2.
 
-            For instance:
-                0.0, 0.0, 10, 50, 1
-                1.0, 1.0, 10, 50, 2
-                0.5, 0.5, 1, 30, 0
-            """
+        For instance:
+            0.0, 0.0, 10, 50, 1
+            1.0, 1.0, 10, 50, 2
+            0.5, 0.5, 1, 30, 0
+        """
 
-            planets = []
-            garrisons = []
-            owners = []
+        planets = []
+        garrisons = []
+        owners = []
 
-            with open(file, 'r') as f:
-                for line in f:
-                    line = line.rstrip()
-                    x, y, size, nr_ships, owner = line.split(',')
+        with open(file, 'r') as f:
+            for line in f:
+                line = line.rstrip()
+                x, y, size, nr_ships, owner = line.split(',')
 
-                    x = float(x)
-                    y = float(y)
-                    size = int(size)
-                    nr_ships = int(nr_ships)
-                    owner = int(owner)
+                x = float(x)
+                y = float(y)
+                size = int(size)
+                nr_ships = int(nr_ships)
+                owner = int(owner)
 
-                    planets.append(Planet(x, y, size))
-                    garrisons.append(nr_ships)
-                    owners.append(owner)
+                planets.append(Planet(x, y, size))
+                garrisons.append(nr_ships)
+                owners.append(owner)
 
-            map = Map(planets)
-            state = State(map, garrisons, owners, whose_turn)
+        map = Map(planets)
+        state = State(map, garrisons, owners, whose_turn)
 
 def mult(
         seq,    # type: list[float]
