@@ -9,22 +9,22 @@ class Fleet:
     """
 
     # Source planet
-    # NB this is not strictly necessary to remember, but it's good for debugging 
+    # NB this is not strictly necessary to remember, but it's good for debugging
     # and visualization
     __source = None # type: Planet
-    
+
     # Target planet
     __target = None # type: Planet
-    
+
     # Distance to the planet
     __distance = None # type: int
-        
+
     # If owner is player 1
     __ownedBy1 = None # type: bool
-    
+
     # Number of ships in the fleet
     __size = None # type: int
-    
+
     # Constructor
     def __init__(self,
                  source,        # type: Planet
@@ -62,21 +62,21 @@ class Fleet:
         :return: The target planet of this fleet
         """
         return self.__target
-    
+
     def distance(self):
         # type: () -> float
         """
         :return: The distance to the target planet (in plies)
         """
         return self.__distance # type: int
-    
+
     def owner(self):
         # type: () -> int
         """
         :return: The owner of the fleet (1 or 2)
         """
         return 1 if self.__ownedBy1 else 2;
-    
+
     def size(self):
         # type: () -> int
         """
@@ -95,12 +95,15 @@ class Fleet:
         """
 
         distance = self.__distance - 1
-        
+
         if distance <= 0:
             return None
 
         return Fleet(self.__source, self.__target, self.owner(), self.__size, distance)
-        
+
+    def clone(self):
+        return Fleet(self.__source, self.__target, self.owner(), self.__size, self.__distance)
+
     def __repr__(self):
         # type: () -> str
         """

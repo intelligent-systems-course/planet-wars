@@ -39,6 +39,9 @@ class State:
     # How many turns have passed
     __turn = 0 # type: int
 
+    # Caching planets for glory
+    __planet_cache = [None] * 3
+
     def __init__(self,
                  map,           # type: Map
                  garrisons,     # type: list[int]
@@ -221,7 +224,10 @@ class State:
         if owner_id is None:
             return planets
 
-        return [p for p in planets if self.owner(p) == owner_id]
+        if self.__planet_cache[owner_id] is None:
+            self.__planet_cache[owner_id] = [p for p in planets if self.owner(p) == owner_id]
+
+        return self.__planet_cache[owner_id]
 
     def finished(self):
         # type: () -> bool
@@ -305,7 +311,7 @@ class State:
         state.__revoked = self.__revoked
 
         # Deep copy the fleets
-        fleets = [copy.deepcopy(fleet) for fleet in self.__fleets]
+        fleets = [fleet.clone() for fleet in self.__fleets]
         state.__fleets = fleets
 
         state.__turn = self.__turn
