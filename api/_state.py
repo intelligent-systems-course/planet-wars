@@ -8,8 +8,8 @@ import api.util as u
 import copy
 import math
 
-
 from api import Fleet, Planet, Map
+
 
 class State:
     """
@@ -18,19 +18,19 @@ class State:
 
     # The map
     __map = None # type: Map
-    
+
     # Whether each planet belongs to player 1, 2 or is neutral (player 0)
     __owner = [] # type: list[int]
-    
+
     # The number of ships stationed at each planet
     __garrisons = [] # type: list[int]
-    
+
     # All fleets in transit
     __fleets = [] # type: list[Fleet]
 
-    # True if it's player 1's turn 
+    # True if it's player 1's turn
     __player1s_turn = None # type: bool
-    
+
     # If one of the players has lost the game by making an illegal move
     # or not moving fast enough. None is nobody has revoked, otherwise the
     # id of the player that revoked
@@ -93,7 +93,7 @@ class State:
 
         for i in player1s_planets:
             owner[i] = 1
-            
+
         for i in player2s_planets:
             owner[i] = 2
 
@@ -120,7 +120,7 @@ class State:
 
         if self.finished():
             raise RuntimeError('Gamestate is finished. No next states exist.')
-        
+
         # Start with a copy of the current state
         state = self.clone() # type: State
 
@@ -140,7 +140,7 @@ class State:
 
         # Execute the move
         if move is not None:
-            
+
             source = self.planets()[move[0]]
             target = self.planets()[move[1]]
 
@@ -152,32 +152,32 @@ class State:
 
                 fleet = Fleet(source, target, self.whose_turn(), fleetsize)
                 state.__fleets.append(fleet)
-            
+
         # Move the fleets, and handle attacks
         for fleet in self.__fleets:
 
             next = fleet.next() # New fleet object, one step closer to destination
 
             if next is None: # fleet has arrived
-                
+
                 # Reinforcements
                 if state.owner(state.planets()[fleet.target().id()]) == fleet.owner():
                     state.__garrisons[fleet.target().id()] += fleet.size()
-                    
-                # Attack    
+
+                # Attack
                 else:
                     # compute the ships remaining after attack: negative means attacker won
                     result = state.__garrisons[fleet.target().id()] - fleet.size()
 
                     # Planet is conquered, change owner
-                    if result < 0: 
+                    if result < 0:
                         state.__owner[fleet.target().id()] = fleet.owner()
                         state.__garrisons[fleet.target().id()] = - result
                     else:
                         state.__garrisons[fleet.target().id()] = result
             else:
                 state.__fleets.append(next)
-        
+
 
         state.__player1s_turn = not self.__player1s_turn
 
@@ -217,7 +217,7 @@ class State:
         id (0, 1 or 2), all planets belonging to that player
         """
         planets = self.__map.planets()
-        
+
         if owner_id is None:
             return planets
 
@@ -261,17 +261,17 @@ class State:
             if the game is not finished.
         """
         if not self.finished():
-            return None 
-        
+            return None
+
         if self.__revoked is not None:
             return self.whose_turn()
-        
+
         if len(self.planets(1)) == 0:
-            return 2;
-        
+            return 2
+
         assert(len(self.planets(2)) == 0)
-        
-        return 1;
+
+        return 1
 
     def owner(self,
               planet # type: Planet
@@ -396,12 +396,12 @@ class State:
                 xy=location, xytext=(0, - 20),
                 textcoords='offset points', ha='center', va='bottom',
                 zorder=30, color=cm[fleet.owner()])
-        
+
         ax.spines["right"].set_visible(False)
         ax.spines["top"].set_visible(False)
         ax.spines["bottom"].set_visible(False)
         ax.spines["left"].set_visible(False)
-        
+
         ax.get_xaxis().set_tick_params(which='both', top='off', bottom='off', labelbottom='off')
         ax.get_yaxis().set_tick_params(which='both', left='off', right='off', labelleft='off')
 
@@ -437,8 +437,8 @@ class State:
         return res
 
     @staticmethod
-    def generate(num_planets, id = None):
-        # type: () -> tuple[State, id]
+    def generate(num_planets, id=None):
+        # type: () -> (State, id)
         """
         Generates a random start state: a random map, with home planets assigned
         NB: This method returns a tuple (State, id), so call it like this::
@@ -466,13 +466,22 @@ class State:
         garrisons = [100, 100]
 
         # Rest of the planets
-        for i in range(num_planets - 2):
+        for i in range(2, num_planets, 2):
             x = round(random.random(), 2)
             y = round(random.random(), 2)
-            inv_size = random.choice([1, 3, 3, 3, 5, 5, 5, 7, 7, 7, 13, 13, 13, 17, 17, 17])
+            size = 1.0 / random.choice([1] + [3, 5, 7, 13, 17] * 3)
+
+            garrisons += ([random.randint(1, 30)] * 2)
+            planets.append(Planet(x, y, size, i))
+            planets.append(Planet(1 - x, 1 - y, size, i + 1))
+
+        if num_planets % 2 != 0:
+            x = round(random.random(), 2)
+            y = 1 - x
+            size = 1.0 / random.choice([1] + [3, 5, 7, 13, 17] * 3)
 
             garrisons.append(random.randint(1, 30))
-            planets.append(Planet(x, y, 1.0/inv_size, i + 2))
+            planets.append(Planet(x, y, size, num_planets - 1))
 
         map = Map(planets)
 
