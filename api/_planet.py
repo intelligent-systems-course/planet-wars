@@ -1,11 +1,12 @@
 import math
 
+
 class Planet:
     """
     A data object representing a single planet.
 
-    This object contains only the map information, not the information that 
-    changed as the game is played (ie. ownership and number of ships stationed).s
+    This object contains only the map information, not the information that
+    changed as the game is played (ie. ownership and number of ships stationed).
     """
 
     # The coordinates of the planet
@@ -20,9 +21,9 @@ class Planet:
     def __init__(self,
                  x,     # type: float
                  y,     # type: float
-                 size,  # type: int
+                 size,  # type: float
                  id     # type: int
-                ):
+                 ):
         """
         :param x: The horizontal coordinate (between 0.0 and 1.0)
         :param y: The vertical coordinate (between 0.0 and 1.0)
@@ -34,9 +35,8 @@ class Planet:
         self.__size = size
         self.__id = id
 
-
     def coords(self):
-        # type: () -> Tuple[float]
+        # type: () -> (float, float)
         """
         Get the coordinates of the given planet
 
@@ -55,7 +55,7 @@ class Planet:
             of the planet.
         """
         return self.__size
-    
+
     def id(self):
         # type: () -> int
         """
@@ -69,7 +69,7 @@ class Planet:
         """
         :return: How many turns the owner of this planet needs to wait for a new ship
         """
-        return math.floor(1.0/self.__size)
+        return int(math.floor(1.0/self.__size))
 
     def __repr__(self):
         # type: () -> str
