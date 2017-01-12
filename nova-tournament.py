@@ -41,23 +41,31 @@ def main():
 
     scores = lambda: sorted(zip(wins, args.players), key=lambda x: x[0], reverse=True)[:3]
 
-    i = 0
-    for ret in pool.imap_unordered(execute, gen_rounds(games)):
-        i += 1
-        (gid, mid, rid), winner, (pid1, pid2), (map_size, seed) = ret
-        if winner is None:
-            result = "DRAW"
-        else:
-            result = args.players[winner]
-            wins[winner] += 1
+    try:
+        i = 0
+        for ret in pool.imap_unordered(execute, gen_rounds(games)):
+            i += 1
+            (gid, mid, rid), winner, (pid1, pid2), (map_size, seed) = ret
+            if winner is None:
+                result = "DRAW"
+            else:
+                result = args.players[winner]
+                wins[winner] += 1
 
-        log("({}:{}:{} | {}:{} | {}:{}): {}".format(gid, mid, rid, map_size, seed, pid1, pid2, result), lvl=2)
+            log("({}:{}:{} | {}:{} | {}:{}): {}".format(gid, mid, rid, map_size, seed, pid1, pid2, result), lvl=2)
 
-        if i % NOTIFY_AMOUNT == 0:
-            log("Finished {}/{} rounds {:.2f}%. Current top 3: {}".format(i, rounds, (float(i) / rounds * 100),
-                                                                          scores()[:3]))
+            if i % NOTIFY_AMOUNT == 0:
+                log("Finished {}/{} rounds ({:.2f})%. Current top 3: {}".format(i, rounds, (float(i) / rounds * 100),
+                                                                                scores()[:3]))
+    except KeyboardInterrupt:
+        log("Tournament interrupted by user", type="FAIL")
+        pool.terminate()
+        pool.join()
+        sys.exit(1)
 
     pool.close()
+    pool.join()
+
     log("All games finished", type="SUCCESS")
     for i, (wins, bot) in enumerate(scores()):
         log("{:3}. ({})".format(i, bot))
@@ -78,9 +86,12 @@ def execute(params):
     ids, (player1, player2), (map_size, seed) = params
     start, _ = State.generate(map_size, seed)
 
-    winner = engine.play(player1[1], player2[1], start, verbose=False, outfile=None,
+    winner = engine.play(player1[1], player2[1], start, verbose=(args.verbose > 2), outfile=None,
                          max_time=args.max_time * 1000, max_turns=args.max_turns)
-    return ids, (player1[0], player2[0])[winner-1], (player1[0], player2[0]), (map_size, seed)
+
+    if winner is not None:
+        winner = (player1[0], player2[0])[winner-1]
+    return ids, winner, (player1[0], player2[0]), (map_size, seed)
 
 
 # following from Python cookbook, #475186
@@ -149,7 +160,7 @@ def optparse():
     parser.add_argument("-T", "--max-turns",
                         dest="max_turns",
                         help="Maximum amount of turns per game",
-                        type=int, default=5000)
+                        type=int, default=100)
 
     parser.add_argument("players",
                         metavar="player",
