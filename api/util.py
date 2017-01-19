@@ -3,6 +3,9 @@ General utility functions
 """
 
 import math, sys, os
+
+import traceback
+
 from api import Planet
 import importlib
 
@@ -90,7 +93,9 @@ def load_player(name, classname='Bot'):
     try:
         module = importlib.import_module('bots.{}.{}'.format(name, name))
     except:
-        print('ERROR: Could not load the python file {}, for player with name {}. Are you sure your Bot has the right filename in the right place? Does your python file have any syntax errors?'.format(path, name))
+        print('ERROR: Could not load the python file {}, for player with name {}. Are you sure your Bot has the right '
+              'filename in the right place? Does your python file have any syntax errors?'.format(path, name))
+        traceback.print_exc()
         sys.exit(1)
 
     # Get a reference to the class
@@ -100,6 +105,7 @@ def load_player(name, classname='Bot'):
         player.__init__()
     except:
         print('ERROR: Could not load the class "Bot" {} from file {}.'.format(classname, path))
+        traceback.print_exc()
         sys.exit()
 
     return player
