@@ -58,6 +58,21 @@ def ratio_ships(state, owner_id):
     return float(p1ships) / float(totalships)
 
 
+def combine_heuristics(*args):
+    """
+    Combines heuristics with varying weights.
+    Example:
+    combine_heuristics((0.2, 1.0), (0.8, -1.0)) -> -0.6
+
+
+    :param args: Tuples in the form (weight, value)
+    :type args: Tuple[Tuple[float, float]]
+    :return: value in the range -1.0..1.0
+    :rtype: float
+    """
+
+    return max(-1.0, min(1.0, reduce(lambda a, (w, h): a + (w * h), args, 0)))
+
 def load_player(name, classname='Bot'):
     #
     """

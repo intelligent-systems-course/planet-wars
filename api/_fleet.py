@@ -116,3 +116,14 @@ class Fleet:
             self.owner(),
             self.__distance,
             0)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return hash(self) == hash(other)
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash((self.__source.id(), self.__target.id(), self.__distance, self.__ownedBy1, self.__size))
