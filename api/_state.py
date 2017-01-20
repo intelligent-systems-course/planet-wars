@@ -453,7 +453,7 @@ class State:
         """
 
         if id is None:
-            id = random.randint(0, 1000)
+            id = random.randint(0, 100000)
 
         # Create an RNG with id as the seed
         rng = random.Random(id)

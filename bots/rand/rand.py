@@ -41,3 +41,5 @@ class Bot:
 
         # Return a random choice
         return random.choice(moves)
+
+        state.planets()
