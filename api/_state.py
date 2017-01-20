@@ -305,7 +305,7 @@ class State:
         state.__revoked = self.__revoked
 
         # Deep copy the fleets
-        fleets = [copy.deepcopy(fleet) for fleet in self.__fleets]
+        fleets = [fleet.clone() for fleet in self.__fleets]
         state.__fleets = fleets
 
         state.__turn = self.__turn

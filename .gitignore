@@ -1,5 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 
+*.pdf
+
 ### Vim template
 # swap
 [._]*.s[a-w][a-z]

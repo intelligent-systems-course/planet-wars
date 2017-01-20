@@ -8,6 +8,7 @@ This is part of the second worksheet.
 from api import State, util
 
 # This package contains various machine learning algorithms
+import sys
 import sklearn
 import sklearn.linear_model
 from sklearn.externals import joblib
@@ -24,6 +25,8 @@ import matplotlib.pyplot as plt
 GAMES = 1000
 # Number of planets in the field
 NUM_PLANETS = 6
+# Maximum number of turns to play
+NUM_TURNS = 100
 
 # The player we'll observe
 player = rand.Bot()
@@ -37,12 +40,14 @@ for g in range(GAMES):
     state, id = State.generate(NUM_PLANETS)
 
     state_vectors = []
-    while not state.finished():
-
+    i = 0
+    while not state.finished() and i <= NUM_TURNS:
         state_vectors.append(features(state))
 
         move = player.get_move(state)
         state = state.next(move)
+
+        i += 1
 
     winner = state.winner()
 
@@ -50,8 +55,11 @@ for g in range(GAMES):
         data.append(state_vector)
         target.append('won' if winner == 1 else 'lost')
 
+    sys.stdout.write(".")
+    sys.stdout.flush()
     if g % (GAMES/10) == 0:
-        print('game {} finished ({}%)'.format(g, (g/float(GAMES)*100) ))
+        print("")
+        print('game {} finished ({}%)'.format(g, (g/float(GAMES)*100)))
 
 # Train a logistic regression model
 learner = sklearn.linear_model.LogisticRegression()

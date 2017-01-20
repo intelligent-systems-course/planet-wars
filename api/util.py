@@ -3,6 +3,9 @@ General utility functions
 """
 
 import math, sys, os
+
+import traceback
+
 from api import Planet
 import importlib
 
@@ -58,6 +61,21 @@ def ratio_ships(state, owner_id):
     return float(p1ships) / float(totalships)
 
 
+def combine_heuristics(*args):
+    """
+    Combines heuristics with varying weights.
+    Example:
+    combine_heuristics((0.2, 1.0), (0.8, -1.0)) -> -0.6
+
+
+    :param args: Tuples in the form (weight, value)
+    :type args: Tuple[Tuple[float, float]]
+    :return: value in the range -1.0..1.0
+    :rtype: float
+    """
+
+    return max(-1.0, min(1.0, reduce(lambda a, (w, h): a + (w * h), args, 0)))
+
 def load_player(name, classname='Bot'):
     #
     """
@@ -75,7 +93,9 @@ def load_player(name, classname='Bot'):
     try:
         module = importlib.import_module('bots.{}.{}'.format(name, name))
     except:
-        print('ERROR: Could not load the python file {}, for player with name {}. Are you sure your Bot has the right filename in the right place? Does your python file have any syntax errors?'.format(path, name))
+        print('ERROR: Could not load the python file {}, for player with name {}. Are you sure your Bot has the right '
+              'filename in the right place? Does your python file have any syntax errors?'.format(path, name))
+        traceback.print_exc()
         sys.exit(1)
 
     # Get a reference to the class
@@ -85,6 +105,7 @@ def load_player(name, classname='Bot'):
         player.__init__()
     except:
         print('ERROR: Could not load the class "Bot" {} from file {}.'.format(classname, path))
+        traceback.print_exc()
         sys.exit()
 
     return player

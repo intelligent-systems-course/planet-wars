@@ -2,11 +2,14 @@ import argparse
 import multiprocessing
 import multiprocessing.pool
 import sys
-
-import itertools
 import random
 
-from api import State, util, engine
+from sklearn.linear_model import LogisticRegression
+from sklearn.externals import joblib
+
+from api import State, util
+
+from bots.ml.ml import features
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 colors = {
@@ -18,45 +21,38 @@ colors = {
 
 args = None
 
-NOTIFY_AMOUNT = 5
+NOTIFY_AMOUNT = 50
+
 
 def main():
 
-    pool = multiprocessing.pool.ThreadPool(args.parallelism)
+    pool = multiprocessing.Pool(processes=args.parallelism)
 
     bots = []
     for id, botname in enumerate(args.players):
-        bots.append((id, util.load_player(botname)))
+        bots.append(util.load_player(botname))
 
-    wins = [0] * len(bots)
+    matches = len(bots) * args.matches * len(args.planets)
 
-    games = list(itertools.combinations(bots, 2))
-    random.shuffle(games)
-
-    matches = len(games)*args.matches*len(args.planets)
-    rounds = matches * args.rounds
-
-    log("{} Bots, {} Maps, {} Games, {} Matches, {} Rounds, 1 victor".format(len(bots), len(args.planets),
-                                                                             len(games), matches, rounds))
-
-    scores = lambda: sorted(zip(wins, args.players), key=lambda x: x[0], reverse=True)
+    log("Training against {} Bots, {} Maps, {} Matches".format(len(bots), len(args.planets), matches))
+    data, target = [], []
 
     try:
         i = 0
-        for ret in pool.imap_unordered(execute, gen_rounds(games)):
+        for ret in pool.imap_unordered(execute, gen_rounds(bots)):
             i += 1
-            (gid, mid, rid), winner, (pid1, pid2), (map_size, seed) = ret
-            if winner is None:
-                result = "DRAW"
-            else:
-                result = args.players[winner]
-                wins[winner] += 1
+            (bid, mid), winner, state_vectors, (map_size, seed) = ret
 
-            log("({}:{}:{} | {}:{} | {}:{}): {}".format(gid, mid, rid, map_size, seed, pid1, pid2, result), lvl=2)
+            # Treat DRAW as losing
+            result = 'won' if winner == 1 else 'lost'
+
+            data  += state_vectors
+            target += [result] * len(state_vectors)
+
+            log("({}:{} | {}:{}): {}".format(bid, mid, map_size, seed, result), lvl=1)
 
             if i % NOTIFY_AMOUNT == 0:
-                log("Finished {}/{} rounds ({:.2f})%. Current top 3: {}".format(i, rounds, (float(i) / rounds * 100),
-                                                                                scores()[:3]))
+                log("Finished {}/{} matches ({:.2f})%.".format(i, matches, (float(i) / matches * 100)))
     except KeyboardInterrupt:
         log("Tournament interrupted by user", type="FAIL")
         pool.terminate()
@@ -67,31 +63,53 @@ def main():
     pool.join()
 
     log("All games finished", type="SUCCESS")
-    for i, (wins, bot) in enumerate(scores()):
-        log("{:3}. {:20} ({})".format(i, bot, wins))
+    generate_model(data, target)
 
 
-def gen_rounds(games):
-    for gid, game in enumerate(games):
+# If you wish to use a different model, this
+# is where to edit
+def generate_model(data, target):
+    log("Training logistic regression model", lvl=1)
+    learner = LogisticRegression()
+    model = learner.fit(data, target)
+
+    log("Checking class imbalance", lvl=1)
+    count = {}
+    for str in target:
+        if str not in count:
+            count[str] = 0
+        count[str] += 1
+
+    log("Instances per class: {}".format(count))
+    joblib.dump(model, args.model)
+    log("Done", type="SUCCESS")
+
+
+def gen_rounds(bots):
+    for bid, bot in enumerate(bots):
         for map_id, map_size in enumerate(args.planets):
             for i in range(args.matches):
                 mid = map_id * args.matches + i
                 seed = random.randint(0, 10000)
-                for j in range(args.rounds):
-                    players = (game[0], game[1]) if j % 2 == 0 else (game[1], game[0])
-                    yield ((gid, mid, j), players, (map_size, seed))
+                yield ((bid, mid), bot, (map_size, seed))
 
 
 def execute(params):
-    ids, (player1, player2), (map_size, seed) = params
-    start, _ = State.generate(map_size, seed)
+    ids, bot, (map_size, seed) = params
+    state, _ = State.generate(map_size, seed)
 
-    winner = engine.play(player1[1], player2[1], start, verbose=(args.verbose > 2), outfile=None,
-                         max_time=args.max_time * 1000, max_turns=args.max_turns)
+    state_vectors = []
+    i = 0
+    while not state.finished() and i <= args.max_turns:
+        state_vectors.append(features(state))
+        move = bot.get_move(state)
+        state = state.next(move)
 
-    if winner is not None:
-        winner = (player1[0], player2[0])[winner-1]
-    return ids, winner, (player1[0], player2[0]), (map_size, seed)
+        i += 1
+
+    winner = state.winner()
+
+    return ids, winner, state_vectors, (map_size, seed)
 
 
 # following from Python cookbook, #475186
@@ -145,12 +163,7 @@ def optparse():
     parser.add_argument("-m", "--num-matches",
                         dest="matches",
                         help="Amount of matches played per map size",
-                        type=int, default=10)
-
-    parser.add_argument("-r", "--rounds",
-                        dest="rounds",
-                        help="Amount of rounds played to determine victor of a match.",
-                        type=int, default=2)
+                        type=int, default=1000)
 
     parser.add_argument("-t", "--max-time",
                         dest="max_time",
@@ -162,11 +175,14 @@ def optparse():
                         help="Maximum amount of turns per game",
                         type=int, default=100)
 
+    parser.add_argument("model",
+                        help="Output file for model",
+                        type=str, default="./bots/ml/model.pkl")
+
     parser.add_argument("players",
                         metavar="player",
                         help="Players for the game",
-                        type=str, nargs='*',
-                        default=["rand", "bully", "rdeep"])
+                        type=str, nargs='+')
 
     parser.add_argument("-P", "--pool-size",
                         dest="parallelism",
