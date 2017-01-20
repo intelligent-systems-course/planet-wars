@@ -455,7 +455,8 @@ class State:
         if id is None:
             id = random.randint(0, 1000)
 
-        random.seed(id)
+        # Create an RNG with id as the seed
+        rng = random.Random(id)
 
         planets = []
 
@@ -467,20 +468,20 @@ class State:
 
         # Rest of the planets
         for i in range(2, num_planets, 2):
-            x = round(random.random(), 2)
-            y = round(random.random(), 2)
-            size = 1.0 / random.choice([1] + [3, 5, 7, 13, 17] * 3)
+            x = round(rng.random(), 2)
+            y = round(rng.random(), 2)
+            size = 1.0 / rng.choice([1] + [3, 5, 7, 13, 17] * 3)
 
-            garrisons += ([random.randint(1, 30)] * 2)
+            garrisons += ([rng.randint(1, 30)] * 2)
             planets.append(Planet(x, y, size, i))
             planets.append(Planet(1 - x, 1 - y, size, i + 1))
 
         if num_planets % 2 != 0:
-            x = round(random.random(), 2)
+            x = round(rng.random(), 2)
             y = 1 - x
-            size = 1.0 / random.choice([1] + [3, 5, 7, 13, 17] * 3)
+            size = 1.0 / rng.choice([1] + [3, 5, 7, 13, 17] * 3)
 
-            garrisons.append(random.randint(1, 30))
+            garrisons.append(rng.randint(1, 30))
             planets.append(Planet(x, y, size, num_planets - 1))
 
         map = Map(planets)
