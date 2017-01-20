@@ -39,7 +39,7 @@ def main():
     log("{} Bots, {} Maps, {} Games, {} Matches, {} Rounds, 1 victor".format(len(bots), len(args.planets),
                                                                              len(games), matches, rounds))
 
-    scores = lambda: sorted(zip(wins, args.players), key=lambda x: x[0], reverse=True)[:3]
+    scores = lambda: sorted(zip(wins, args.players), key=lambda x: x[0], reverse=True)
 
     try:
         i = 0
@@ -68,7 +68,7 @@ def main():
 
     log("All games finished", type="SUCCESS")
     for i, (wins, bot) in enumerate(scores()):
-        log("{:3}. ({})".format(i, bot))
+        log("{:3}. {:20} ({})".format(i, bot, wins))
 
 
 def gen_rounds(games):
