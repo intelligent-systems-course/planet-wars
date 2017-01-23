@@ -17,6 +17,7 @@ class Bot:
     __randomize = True
 
     __model = None
+    __my_id = 0
 
     def __init__(self, randomize=True, depth=4, model_file=DEFAULT_MODEL):
 
@@ -28,6 +29,8 @@ class Bot:
         self.__model = joblib.load(model_file)
 
     def get_move(self, state):
+        # Find out which player we are
+        self.__my_id = state.whose_turn()
 
         val, move = self.value(state)
 
@@ -48,7 +51,7 @@ class Bot:
         if depth == self.__max_depth:
             return self.heuristic(state), None
 
-        best_value = float('-inf') if maximizing(state) else float('inf')
+        best_value = float('-inf') if maximizing(state, self.__my_id) else float('inf')
         best_move = None
 
         moves = state.moves()
@@ -60,7 +63,7 @@ class Bot:
 
             value ???
 
-            if maximizing(state):
+            if maximizing(state, self.__my_id):
                 if value > best_value:
                     best_value = value
                     best_move = move
@@ -96,13 +99,13 @@ class Bot:
 
         return res
 
-def maximizing(state):
+def maximizing(state, my_id):
     """
     Whether we're the maximizing player (1) or the minimizing player (2).
     :param state:
     :return:
     """
-    return state.whose_turn() == 1
+    return state.whose_turn() == my_id
 
 
 def features(state):
