@@ -46,7 +46,7 @@ class Bot:
         :return: val, move: the value of the state, and the best move.
         """
         if state.finished():
-            return (1.0, None) if state.winner() == 1 else (-1.0, None)
+            return (1.0, None) if state.winner() == self.__my_id else (-1.0, None)
 
         if depth == self.__max_depth:
             return self.heuristic(state), None
@@ -96,6 +96,10 @@ class Bot:
         # Weigh the win/loss outcomes (-1 and 1) by their probabilities
         res = -1.0 * prob[classes.index('lost')] + 1.0 * prob[classes.index('won')]
         # print(res)
+
+        # Its not 'quite' right, due to draws
+        if self.__my_id == 2:
+            res = -res
 
         return res
 
