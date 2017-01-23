@@ -91,16 +91,16 @@ def gen_rounds(bots):
             for i in range(args.matches):
                 mid = map_id * args.matches + i
                 seed = random.randint(0, 100000)
-                yield ((bid, mid), bot, (map_size, seed))
+                yield ((bid, mid), bot, (map_size, seed, args.max_turns))
 
 
 def execute(params):
-    ids, bot, (map_size, seed) = params
+    ids, bot, (map_size, seed, max_turns) = params
     state, _ = State.generate(map_size, seed)
 
     state_vectors = []
     i = 0
-    while not state.finished() and i <= args.max_turns:
+    while not state.finished() and i <= max_turns:
         state_vectors.append(features(state))
         move = bot.get_move(state)
         state = state.next(move)
