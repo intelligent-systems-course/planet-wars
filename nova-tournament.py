@@ -76,7 +76,7 @@ def gen_rounds(games):
         for map_id, map_size in enumerate(args.planets):
             for i in range(args.matches):
                 mid = map_id * args.matches + i
-                seed = random.randint(0, 10000)
+                seed = random.randint(0, 100000)
                 for j in range(args.rounds):
                     players = (game[0], game[1]) if j % 2 == 0 else (game[1], game[0])
                     yield ((gid, mid, j), players, (map_size, seed))

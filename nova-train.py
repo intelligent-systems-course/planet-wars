@@ -90,7 +90,7 @@ def gen_rounds(bots):
         for map_id, map_size in enumerate(args.planets):
             for i in range(args.matches):
                 mid = map_id * args.matches + i
-                seed = random.randint(0, 10000)
+                seed = random.randint(0, 100000)
                 yield ((bid, mid), bot, (map_size, seed))
 
 
