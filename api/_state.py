@@ -518,14 +518,6 @@ class State:
             garrisons.append(rng.randint(1, 30))
             planets.append(Planet(x, y, size, i))
 
-        if num_planets % 2 != 0:
-            x = round(rng.random(), 2)
-            y = 1 - x
-            size = 1.0 / rng.choice([1] + [3, 5, 7, 13, 17] * 3)
-
-            garrisons.append(rng.randint(1, 30))
-            planets.append(Planet(x, y, size, num_planets - 1))
-
         map = Map(planets)
 
         state = State.make(map, garrisons, [0], [1])

@@ -96,12 +96,12 @@ def gen_rounds(bots):
             for i in range(args.matches):
                 mid = map_id * args.matches + i
                 seed = random.randint(0, 100000)
-                yield ((bid, mid), bot, (map_size, seed, args.max_turns))
+                yield ((bid, mid), bot, (map_size, seed, args.max_turns, args.asym))
 
 
 def execute(params):
-    ids, bot, (map_size, seed, max_turns) = params
-    state, _ = State.generate(map_size, seed, symmetric=not args.asym)
+    ids, bot, (map_size, seed, max_turns, asym) = params
+    state, _ = State.generate(map_size, seed, symmetric=not asym)
 
     state_vectors = []
     i = 0
