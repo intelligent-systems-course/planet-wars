@@ -35,10 +35,10 @@ class Bot:
         :return val, move: the value of the state, and the best move.
         """
         if state.finished():
-            return (1.0, None) if state.winner() == self.__my_id else (-1.0, None)
+            return (1.0, None) if state.winner() == 1 else (-1.0, None)
 
         if depth == self.__max_depth:
-            return heuristic(state, self.__my_id)
+            return heuristic(state)
 
         best_value = float('-inf') if maximizing(state, self.__my_id) else float('inf')
         best_move = None
@@ -80,5 +80,5 @@ def maximizing(state, my_id):
     """
     return state.whose_turn() == my_id
 
-def heuristic(state, my_id):
-    return util.ratio_ships(state, my_id) * 2.0 - 1.0, None
+def heuristic(state):
+    return util.ratio_ships(state, 1) * 2.0 - 1.0, None

@@ -40,10 +40,10 @@ class Bot:
         :return: A tuple containing the value of this state, and the best move for the player currently to move
         """
         if state.finished():
-            return (1.0, None) if state.winner() == self.__my_id else (-1.0, None)
+            return (1.0, None) if state.winner() == 1 else (-1.0, None)
 
         if depth == self.__max_depth:
-            return heuristic(state, self.__my_id)
+            return heuristic(state)
 
         moves = state.moves()
 
@@ -80,7 +80,7 @@ def maximizing(state, my_id):
     """
     return state.whose_turn() == my_id
 
-def heuristic(state, my_id):
+def heuristic(state):
     # type: (State) -> float
     """
     Estimate the value of this state: -1.0 is a certain win for player 2, 1.0 is a certain win for player 1
@@ -88,4 +88,4 @@ def heuristic(state, my_id):
     :param state:
     :return: A heuristic evaluation for the given state (between -1.0 and 1.0)
     """
-    return util.ratio_ships(state, my_id) * 2.0 - 1.0, None
+    return util.ratio_ships(state, 1) * 2.0 - 1.0, None
