@@ -21,7 +21,8 @@ def call_engine(options):
     player2 = util.load_player(options.player2)
 
     # Generate or load the map
-    state, id = State.generate(int(options.num_planets))
+    state, id = State.generate(int(options.num_planets), symmetric=not options.asym)
+
     if not options.quiet:
         print('-- Using map with id {} '.format(id))
         print('   Start state: ' + str(state))
@@ -66,6 +67,10 @@ if __name__ == "__main__":
     parser.add_argument("--output", dest="outputfile",
                         help="Where to store the visualization of the game (a pdf file). Set to 'none' for no output.",
                         default="game.pdf")
+
+    parser.add_argument("-a", "--asym", dest="asym",
+                        help="Whether to start with an asymmetric state.",
+                        action="store_true")
 
     options = parser.parse_args()
 

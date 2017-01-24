@@ -27,6 +27,8 @@ GAMES = 1000
 NUM_PLANETS = 6
 # Maximum number of turns to play
 NUM_TURNS = 100
+# Train for symmetric start states
+SYM = True
 
 # The player we'll observe
 player = rand.Bot()
@@ -37,7 +39,7 @@ target = []
 
 for g in range(GAMES):
 
-    state, id = State.generate(NUM_PLANETS)
+    state, id = State.generate(NUM_PLANETS, symmetric=SYM)
 
     state_vectors = []
     i = 0
@@ -53,7 +55,14 @@ for g in range(GAMES):
 
     for state_vector in state_vectors:
         data.append(state_vector)
-        target.append('won' if winner == 1 else 'lost')
+
+        if winner == 1:
+            result = 'won'
+        elif winner == 2:
+            result = 'lost'
+        else:
+            result = 'draw'
+        target.append(result)
 
     sys.stdout.write(".")
     sys.stdout.flush()

@@ -34,7 +34,7 @@ def run_tournament(options):
             else:
                 p = [b, a]
 
-            start, _ = State.generate(int(options.num_planets))
+            start, _ = State.generate(int(options.num_planets), symmetric=not options.asym)
 
             winner = engine.play(bots[p[0]], bots[p[1]], start, verbose=False, outfile=None)
 
@@ -74,6 +74,10 @@ if __name__ == "__main__":
                         dest="max_time",
                         help="maximum amount of time allowed per turn in seconds (default: 5)",
                         type=int, default=5)
+
+    parser.add_argument("-a", "--asym", dest="asym",
+                        help="Whether to start with an asymmetric state.",
+                        action="store_true")
 
     options = parser.parse_args()
 

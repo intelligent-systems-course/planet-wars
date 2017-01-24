@@ -84,7 +84,7 @@ def gen_rounds(games):
 
 def execute(params):
     ids, (player1, player2), (map_size, seed) = params
-    start, _ = State.generate(map_size, seed)
+    start, _ = State.generate(map_size, seed, symmetric=not args.asym)
 
     winner = engine.play(player1[1], player2[1], start, verbose=(args.verbose > 2), outfile=None,
                          max_time=args.max_time * 1000, max_turns=args.max_turns)
@@ -176,6 +176,10 @@ def optparse():
     parser.add_argument("-v", "--verbose",
                         action="count", default=0,
                         help="Show more output")
+
+    parser.add_argument("-a", "--asym", dest="asym",
+                        help="Whether to start with an asymmetric state.",
+                        action="store_true")
 
     parser.set_defaults(color=has_colours(sys.stdout))
 
