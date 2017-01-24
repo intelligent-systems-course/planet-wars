@@ -11,7 +11,6 @@ class Bot:
 
     __max_depth = -1
     __randomize = True
-    __my_id = 0
 
     def __init__(self, randomize=True, depth=4):
         """
@@ -23,9 +22,6 @@ class Bot:
 
     def get_move(self, state):
         # type: (State) -> tuple[int, int]
-
-        # Find out which player we are
-        self.__my_id = state.whose_turn()
 
         val, move = self.value(state)
 
@@ -50,7 +46,7 @@ class Bot:
         if self.__randomize:
             random.shuffle(moves)
 
-        best_value = float('-inf') if maximizing(state, self.__my_id) else float('inf')
+        best_value = float('-inf') if maximizing(state) else float('inf')
         best_move = None
 
         for move in moves:
@@ -61,7 +57,7 @@ class Bot:
             # minimax value of 'next_state'
             value ???
 
-            if maximizing(state, self.__my_id):
+            if maximizing(state):
                 if value > best_value:
                     best_value = value
                     best_move = move
@@ -72,13 +68,13 @@ class Bot:
 
         return best_value, best_move
 
-def maximizing(state, my_id):
+def maximizing(state):
     # type: (State) -> bool
     """
     :param state:
     :return: True if we're the maximizing player (player 1), false otherwise (player 2).
     """
-    return state.whose_turn() == my_id
+    return state.whose_turn() == 1
 
 def heuristic(state):
     # type: (State) -> float

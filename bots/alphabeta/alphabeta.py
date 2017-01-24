@@ -11,16 +11,12 @@ class Bot:
 
     __max_depth = -1
     __randomize = True
-    __my_id = 0
 
     def __init__(self, randomize=True, depth=4):
         self.__randomize = randomize
         self.__max_depth = depth
 
     def get_move(self, state):
-        # Find out which player we are
-        self.__my_id = state.whose_turn()
-
         val, move = self.value(state)
 
         return move # to do nothing, return None
@@ -40,7 +36,7 @@ class Bot:
         if depth == self.__max_depth:
             return heuristic(state)
 
-        best_value = float('-inf') if maximizing(state, self.__my_id) else float('inf')
+        best_value = float('-inf') if maximizing(state) else float('inf')
         best_move = None
 
         moves = state.moves()
@@ -53,7 +49,7 @@ class Bot:
             next_state = state.next(move)
             value, _ = ???
 
-            if maximizing(state, self.__my_id):
+            if maximizing(state):
                 if value > best_value:
                     best_value = value
                     best_move = move
@@ -71,14 +67,14 @@ class Bot:
 
         return best_value, best_move
 
-def maximizing(state, my_id):
+def maximizing(state):
     """
     Whether we're the maximizing player (1) or the minimizing player (2).
 
     :param state:
     :return:
     """
-    return state.whose_turn() == my_id
+    return state.whose_turn() == 1
 
 def heuristic(state):
     return util.ratio_ships(state, 1) * 2.0 - 1.0, None
