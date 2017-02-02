@@ -510,7 +510,7 @@ class State:
         garrisons = [100, 100]
 
         # Rest of the planets
-        for i in range(num_planets):
+        for i in range(2, num_planets):
             x = round(rng.random(), 2)
             y = round(rng.random(), 2)
             size = 1.0 / rng.choice([1] + [3, 5, 7, 13, 17] * 3)
